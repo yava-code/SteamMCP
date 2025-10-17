@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 import os
 
+from utils import format_steam_profile
+
 load_dotenv()
 api_key = os.getenv("STEAM_API_KEY")
 
@@ -13,4 +15,6 @@ def fetch_steam_profile(steam_id: str) -> dict:
         return data
     else:
         raise Exception(f"Failed to fetch data: {response.status_code}")
+
+
 
