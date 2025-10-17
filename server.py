@@ -1,7 +1,7 @@
 # server.py
 from fastmcp import FastMCP
 
-from fetch_profile import fetch_steam_profile
+from fetcher import fetch_steam_profile
 
 mcp = FastMCP(
     name="steamcp"
