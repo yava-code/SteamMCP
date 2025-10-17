@@ -3,5 +3,8 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.12 (steammcp)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (steammcp)" project-jdk-type="Python SDK" />
+  <component name="Black">
+    <option name="sdkName" value="Python 3.12 (machinelearning)" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (machinelearning)" project-jdk-type="Python SDK" />
 </project>
