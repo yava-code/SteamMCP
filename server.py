@@ -1,24 +1,25 @@
 # server.py
 from fastmcp import FastMCP
 
-# 1. Инициализируем сервер, даем ему имя и описание.
+from fetch_profile import fetch_steam_profile
+
 mcp = FastMCP(
-    name="hello_server"
+    name="steamcp"
 )
 
 
-# 2. С помощью декоратора @mcp.tool() превращаем функцию в инструмент.
+
 @mcp.tool()
-def say_hello(name: str) -> str:
+def get_profile_info(id: str) -> dict:
     """
-    Greets the person with the given name.
+    Fetch steam profile base info
 
     Args:
-        name: The name of the person to greet.
+        id: Steam ID
     """
-    return f"Hello, {name}!"
+    return fetch_steam_profile(id)
 
 
-# 3. Эта строка нужна, чтобы сервер можно было запустить напрямую.
+
 if __name__ == "__main__":
     mcp.run()
