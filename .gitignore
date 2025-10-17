@@ -163,3 +163,5 @@ cython_debug/
 #.idea/
 
 !/.env
+!/InternalSteamWebAPI.wiki/
+!/InternalSteamWebAPI.wiki/
