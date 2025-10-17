@@ -6,7 +6,7 @@ import logging
 from fetcher import (
     fetch_steam_profile, fetch_friend_list, fetch_player_achievements,
     fetch_user_stats_for_game, fetch_owned_games, fetch_recently_played_games,
-    fetch_game_new, fetch_game_schema, fetch_app_details, resolve_vanity_url
+    fetch_game_news, fetch_game_schema, fetch_app_details, resolve_vanity_url
 )
 from market import (
     fetch_top_market, search_market, fetch_item_price_history,
@@ -23,8 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastMCP
 mcp = FastMCP(
-    name="steamcp",
-    description="Steam API integration for LLM model"
+    name="steamcp"
 )
 
 # Profile related tools
