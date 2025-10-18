@@ -142,17 +142,17 @@ def get_recently_played_games(steam_id: str, count: int = 10) -> dict:
 
 
 @mcp.tool()
-def get_game_details(app_id: int) -> dict:
+def get_game_news(app_id: int) -> dict:
     """
-    Fetch details for a specific game
+    Fetch news articles for a specific game
 
     Args:
         app_id: Application ID of the game
 
     Returns:
-        Dict containing game details
+        Dict containing game news articles
     """
-    logger.info(f"Fetching game details for App ID: {app_id}")
+    logger.info(f"Fetching game news for App ID: {app_id}")
     return fetch_game_news(app_id)
 
 
@@ -200,6 +200,8 @@ def get_top_market_items(count: int = 100, start: int = 0, sort_column: str = "p
     Returns:
         Dict containing market search results
     """
+    if count <= 0 or count > 100:
+        raise ValueError("Count must be between 1 and 100")
     logger.info(f"Fetching top market items, count: {count}, sort: {sort_column}")
     return fetch_top_market(count, start, sort_column, sort_dir)
 
@@ -218,6 +220,8 @@ def search_market_items(query: str, app_id: int | None = None, count: int = 100,
     Returns:
         Dict containing market search results
     """
+    if count <= 0 or count > 100:
+        raise ValueError("Count must be between 1 and 100")
     logger.info(f"Searching market items with query: {query}")
     return search_market(query, app_id, count, start)
 
@@ -266,6 +270,8 @@ def get_popular_market_items(count: int = 10) -> dict:
     Returns:
         Dict containing popular market items data
     """
+    if count <= 0 or count > 100:
+        raise ValueError("Count must be between 1 and 100")
     logger.info(f"Fetching popular market items, count: {count}")
     return fetch_market_popular_items(count)
 
@@ -282,6 +288,8 @@ def get_recent_market_activity(app_id: int | None = None, count: int = 10) -> di
     Returns:
         Dict containing recent market activity data
     """
+    if count <= 0 or count > 100:
+        raise ValueError("Count must be between 1 and 100")
     logger.info(f"Fetching recent market activity, count: {count}")
     return fetch_market_recent_activity(app_id, count)
 
