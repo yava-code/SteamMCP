@@ -12,12 +12,12 @@ def format_steam_profile(data: dict) -> str:
     result.append(f"Steam Profile: {player.get('personaname', 'Unknown')}".center(50))
     result.append("=" * 50 + "\n")
 
-    # Основная информация
+    # основная инфа
     result.append(f"👤 Nickname: {player.get('personaname', 'N/A')}")
     result.append(f"🆔 SteamID: {player.get('steamid', 'N/A')}")
     result.append(f"🌐 Profile URL: {player.get('profileurl', 'N/A')}")
 
-    # Статус
+    # статус
     status_map = {
         0: "Offline",
         1: "Online",
@@ -29,26 +29,26 @@ def format_steam_profile(data: dict) -> str:
     }
     result.append(f"🟢 Status: {status_map.get(player.get('personastate'), 'Unknown')}")
 
-    # Дата создания аккаунта
+    # когда создали аккаунт
     if "timecreated" in player:
         try:
             result.append(f"📅 Account created: {datetime.fromtimestamp(player['timecreated']).strftime('%Y-%m-%d')}")
         except:
             result.append(f"📅 Account created: {player['timecreated']}")
 
-    # Локация
+    # локация
     if any(k in player for k in ["loccountrycode", "locstatecode", "loccityid"]):
         result.append(f"📍 Location: {player.get('loccountrycode', '?')}/{player.get('locstatecode', '?')}")
 
-    # Реальное имя (если есть)
+    # реальное имя (если есть)
     if player.get("realname"):
         result.append(f"👥 Real name: {player['realname']}")
 
-    # Аватар
+    # аватар
     if player.get("avatarfull"):
         result.append(f"🖼️ Avatar: {player['avatarfull']}")
 
-    # Видимость профиля
+    # видимость профиля
     visibility_map = {
         1: "Private",
         2: "Friends only",
@@ -59,5 +59,5 @@ def format_steam_profile(data: dict) -> str:
     result.append("\n" + "=" * 50 + "\n")
     return "\n".join(result)
 
-# Пример использования:
+# пример использования:
 # print(format_steam_profile(fetch_steam_profile("76561198006409530")))

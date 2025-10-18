@@ -1,6 +1,15 @@
 from dotenv import load_dotenv
 import os
 
+<<<<<<< Updated upstream
+=======
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+>>>>>>> Stashed changes
 
 
 load_dotenv()
@@ -16,6 +25,12 @@ def fetch_steam_profile(steam_id: str) -> dict:
     else:
         raise Exception(f"Failed to fetch data: {response.status_code}")
 
+<<<<<<< Updated upstream
+=======
+
+STEAM_API_BASE = "http://api.steampowered.com"
+STEAM_STORE_API_BASE = "https://store.steampowered.com/api"
+>>>>>>> Stashed changes
 
 
 def fetch_friend_list (steam_id: str) -> dict:
