@@ -4,6 +4,7 @@ import time
 from typing import Dict
 import os
 from dotenv import load_dotenv
+import urllib.parse
 
 # настраиваем логирование
 logging.basicConfig(
@@ -177,7 +178,6 @@ def fetch_item_price_history(appid: int, market_hash_name: str) -> Dict:
         raise ValueError("Market hash name cannot be empty")
 
     # кодируем имя для урла (чтобы без пробелов и спецсимволов)
-    import urllib.parse
     encoded_hash_name = urllib.parse.quote(market_hash_name)
 
     url = f"{STEAM_MARKET_URL}/pricehistory"
@@ -211,7 +211,6 @@ def fetch_item_price_overview(appid: int, market_hash_name: str, currency: int =
         raise ValueError("Market hash name cannot be empty")
 
     # кодируем имя для урла (чтобы без пробелов и спецсимволов)
-    import urllib.parse
     encoded_hash_name = urllib.parse.quote(market_hash_name)
 
     url = f"{STEAM_MARKET_URL}/priceoverview"
@@ -257,7 +256,6 @@ def fetch_item_listings(
         raise ValueError("Count must be between 1 and 100")
 
     # кодируем имя для урла (чтобы без пробелов и спецсимволов)
-    import urllib.parse
     encoded_hash_name = urllib.parse.quote(market_hash_name)
 
     url = f"{STEAM_MARKET_URL}/listings/{appid}/{encoded_hash_name}/render"

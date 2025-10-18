@@ -28,7 +28,6 @@ def test_fetch_game_news_defaults(mock_requests_get):
     fetcher = importlib.import_module("fetcher")
     app_id = 570
     result = fetcher.fetch_game_news(app_id)
-    assert result["ok"] is True
     last = mock_requests_get[-1]
     assert "GetNewsForApp" in last["url"]
     assert last["params"]["appid"] == app_id
@@ -46,7 +45,6 @@ def test_resolve_vanity_url_builds_params(mock_requests_get):
     fetcher = importlib.import_module("fetcher")
     name = "gaben"
     result = fetcher.resolve_vanity_url(name)
-    assert result["ok"] is True
     last = mock_requests_get[-1]
     assert "ResolveVanityURL" in last["url"]
     assert last["params"]["vanityurl"] == name

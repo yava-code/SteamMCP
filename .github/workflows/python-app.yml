@@ -16,6 +16,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+
 
     steps:
     - uses: actions/checkout@v4
