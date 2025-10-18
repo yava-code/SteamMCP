@@ -1,5 +1,7 @@
 from fastmcp import FastMCP
+import logging
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 from fetcher import fetch_steam_profile
 from market import fetch_top_market
@@ -18,21 +20,44 @@ from market import (
 )
 
 
+=======
+# Import all methods from fetcher and market modules
+from fetcher import (
+    fetch_steam_profile, fetch_friend_list, fetch_player_achievements,
+    fetch_user_stats_for_game, fetch_owned_games, fetch_recently_played_games,
+    fetch_game_news, fetch_game_schema, fetch_app_details, resolve_vanity_url
+)
+from market import (
+    fetch_top_market, search_market, fetch_item_price_history,
+    fetch_item_price_overview, fetch_item_listings, fetch_market_popular_items,
+    fetch_market_recent_activity, fetch_item_orders_histogram
+)
+
+# Configure logging
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
+<<<<<<< HEAD
 
 >>>>>>> Stashed changes
+=======
+# Initialize FastMCP
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 mcp = FastMCP(
     name="steamcp"
 )
 
+<<<<<<< HEAD
 
 <<<<<<< Updated upstream
 =======
+=======
+# Profile related tools
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 @mcp.tool()
 def get_profile_info(steam_id: str) -> dict:
     """
@@ -46,22 +71,29 @@ def get_profile_info(steam_id: str) -> dict:
     """
     logger.info(f"Fetching profile info for Steam ID: {steam_id}")
     return fetch_steam_profile(steam_id)
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 
 @mcp.tool()
-def get_profile_info(id: str) -> dict:
+def get_friends(steam_id: str) -> dict:
     """
-    Fetch steam profile base info
-
+    Fetch friend list for a Steam user
+    
     Args:
-        id: Steam ID
+        steam_id: Steam ID of the user
+    
+    Returns:
+        Dict containing friend list information
     """
-    return fetch_steam_profile(id)
-
+    logger.info(f"Fetching friend list for Steam ID: {steam_id}")
+    return fetch_friend_list(steam_id)
 
 @mcp.tool()
-def get_profile_info(id: str) -> dict:
+def resolve_vanity_url_name(vanity_url_name: str) -> dict:
     """
+<<<<<<< HEAD
     Fetch top 10 market items
 
 <<<<<<< Updated upstream
@@ -73,16 +105,87 @@ def get_player_achievements(steam_id: str, app_id: int) -> dict:
     Fetch achievements for a player in a specific game
     
 >>>>>>> Stashed changes
+=======
+    Resolve a vanity URL name to a Steam ID
+    
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
     Args:
-
-
-
+        vanity_url_name: The vanity URL name to resolve
+    
+    Returns:
+        Dict containing the resolved Steam ID
     """
-    return fetch_top_market()
+    logger.info(f"Resolving vanity URL name: {vanity_url_name}")
+    return resolve_vanity_url(vanity_url_name)
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 
 =======
+=======
+# Game related tools
+@mcp.tool()
+def get_player_achievements(steam_id: str, app_id: int) -> dict:
+    """
+    Fetch achievements for a player in a specific game
+    
+    Args:
+        steam_id: Steam ID of the player
+        app_id: Application ID of the game
+    
+    Returns:
+        Dict containing achievement information
+    """
+    logger.info(f"Fetching achievements for Steam ID: {steam_id}, App ID: {app_id}")
+    return fetch_player_achievements(steam_id, app_id)
+
+@mcp.tool()
+def get_user_stats(steam_id: str, app_id: int) -> dict:
+    """
+    Fetch stats for a player in a specific game
+    
+    Args:
+        steam_id: Steam ID of the player
+        app_id: Application ID of the game
+    
+    Returns:
+        Dict containing player stats
+    """
+    logger.info(f"Fetching stats for Steam ID: {steam_id}, App ID: {app_id}")
+    return fetch_user_stats_for_game(steam_id, app_id)
+
+@mcp.tool()
+def get_owned_games(steam_id: str, include_appinfo: bool = True, include_played_free_games: bool = True) -> dict:
+    """
+    Fetch owned games for a Steam user
+    
+    Args:
+        steam_id: Steam ID of the user
+        include_appinfo: Include game name and icon information
+        include_played_free_games: Include free games that the user has played
+    
+    Returns:
+        Dict containing owned games information
+    """
+    logger.info(f"Fetching owned games for Steam ID: {steam_id}")
+    return fetch_owned_games(steam_id, include_appinfo, include_played_free_games)
+
+@mcp.tool()
+def get_recently_played_games(steam_id: str, count: int = 10) -> dict:
+    """
+    Fetch recently played games for a Steam user
+    
+    Args:
+        steam_id: Steam ID of the user
+        count: Number of games to return
+    
+    Returns:
+        Dict containing recently played games information
+    """
+    logger.info(f"Fetching recently played games for Steam ID: {steam_id}")
+    return fetch_recently_played_games(steam_id, count)
+
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 @mcp.tool()
 def get_game_details(app_id: int) -> dict:
     """
@@ -95,7 +198,11 @@ def get_game_details(app_id: int) -> dict:
         Dict containing game details
     """
     logger.info(f"Fetching game details for App ID: {app_id}")
+<<<<<<< HEAD
     return fetch_game_news(app_id)
+=======
+    return fetch_game_new(app_id)
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 
 @mcp.tool()
 def get_game_schema(app_id: int) -> dict:
@@ -125,7 +232,11 @@ def get_app_details(app_id: int) -> dict:
     logger.info(f"Fetching app details for App ID: {app_id}")
     return fetch_app_details(app_id)
 
+<<<<<<< HEAD
 
+=======
+# Market related tools
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 @mcp.tool()
 def get_top_market_items(count: int = 100, start: int = 0, sort_column: str = "popular", sort_dir: str = "desc") -> dict:
     """
@@ -219,7 +330,11 @@ def get_recent_market_activity(app_id: int = None, count: int = 10) -> dict:
     """
     logger.info(f"Fetching recent market activity, count: {count}")
     return fetch_market_recent_activity(app_id, count)
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 
 if __name__ == "__main__":
+    logger.info("Starting Steam MCP server")
     mcp.run()

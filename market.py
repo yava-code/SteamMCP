@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 def fetch_top_market() -> dict:
     import requests
@@ -9,6 +10,8 @@ def fetch_top_market() -> dict:
     else:
         raise Exception(f"Failed to fetch data: {response.status_code}")
 =======
+=======
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 import requests
 import logging
 import time
@@ -16,18 +19,30 @@ from typing import Dict, List, Optional, Union, Any
 import os
 from dotenv import load_dotenv
 
+<<<<<<< HEAD
 
+=======
+# Configure logging
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
+<<<<<<< HEAD
 
 load_dotenv()
 api_key = os.getenv("STEAM_API_KEY")
 
 
+=======
+# Load environment variables
+load_dotenv()
+api_key = os.getenv("STEAM_API_KEY")
+
+# Base URLs
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
 STEAM_COMMUNITY_URL = "https://steamcommunity.com"
 STEAM_MARKET_URL = f"{STEAM_COMMUNITY_URL}/market"
 
@@ -63,7 +78,11 @@ def _make_request(url: str, params: Dict = None, retries: int = 3, backoff_facto
             if response.status_code == 200:
                 return response.json()
             elif response.status_code == 429:
+<<<<<<< HEAD
                 # тут лимит по запросам, просто подождём и попробуем ещё раз
+=======
+                # Rate limited, wait and retry
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
                 wait_time = backoff_factor * (2 ** attempt)
                 logger.warning(f"Rate limited. Waiting {wait_time} seconds before retry.")
                 time.sleep(wait_time)
@@ -175,7 +194,11 @@ def fetch_item_price_history(appid: int, market_hash_name: str) -> Dict:
     if not market_hash_name:
         raise ValueError("Market hash name cannot be empty")
     
+<<<<<<< HEAD
     # кодируем имя для урла (чтобы без пробелов и спецсимволов)
+=======
+    # URL encode the market hash name
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
     import urllib.parse
     encoded_hash_name = urllib.parse.quote(market_hash_name)
     
@@ -208,7 +231,11 @@ def fetch_item_price_overview(appid: int, market_hash_name: str, currency: int =
     if not market_hash_name:
         raise ValueError("Market hash name cannot be empty")
     
+<<<<<<< HEAD
     # кодируем имя для урла (чтобы без пробелов и спецсимволов)
+=======
+    # URL encode the market hash name
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
     import urllib.parse
     encoded_hash_name = urllib.parse.quote(market_hash_name)
     
@@ -247,7 +274,11 @@ def fetch_item_listings(appid: int, market_hash_name: str, currency: int = 1, st
     if count <= 0 or count > 100:
         raise ValueError("Count must be between 1 and 100")
     
+<<<<<<< HEAD
     # кодируем имя для урла (чтобы без пробелов и спецсимволов)
+=======
+    # URL encode the market hash name
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
     import urllib.parse
     encoded_hash_name = urllib.parse.quote(market_hash_name)
     
@@ -339,5 +370,9 @@ def fetch_item_orders_histogram(item_nameid: str, currency: int = 1) -> Dict:
         "two_factor": 0
     }
     
+<<<<<<< HEAD
     return _make_request(url, params)
 >>>>>>> Stashed changes
+=======
+    return _make_request(url, params)
+>>>>>>> 4711b05cfed842c7ac08fe2f21e80cff5cd874e5
