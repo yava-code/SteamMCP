@@ -1,0 +1,36 @@
+name: Auto Merge test→main
+
+on:
+  push:
+    branches: [ "test" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-and-automerge-pr:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: auto-merge-test-main
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create PR from test to main if missing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -e
+          pr_number=$(gh pr list --base main --head test --state open --json number --jq '.[0].number' || echo '')
+          if [ -z "$pr_number" ]; then
+            gh pr create --base main --head test --title "Auto: Promote test → main" --body "PR создан автоматически после пуша в ветку \`test\`. Слияние произойдёт после успешного прохождения всех обязательных проверок."
+            pr_number=$(gh pr list --base main --head test --state open --json number --jq '.[0].number')
+          fi
+          # Включаем авто-мердж (слияние произойдёт после прохождения всех обязательных проверок)
+          if ! gh pr merge "$pr_number" --squash --auto; then
+            echo "Auto-merge недоступен или не включён в настройках репозитория. PR оставлен открытым."
+          fi

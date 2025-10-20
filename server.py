@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 mcp = FastMCP(name="steamcp")
 
 
-@mcp.tool()
+@mcp.resource()
 def get_profile_info(steam_id: str) -> dict:
     """
     Fetch Steam profile information for a user
@@ -46,7 +46,7 @@ def get_profile_info(steam_id: str) -> dict:
     return fetch_steam_profile(steam_id)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_friends(steam_id: str) -> dict:
     """
     Fetch friend list for a Steam user
@@ -61,7 +61,7 @@ def get_friends(steam_id: str) -> dict:
     return fetch_friend_list(steam_id)
 
 
-@mcp.tool()
+@mcp.resource()
 def resolve_vanity_url_name(vanity_url_name: str) -> dict:
     """
     Resolve a vanity URL name to a Steam ID
@@ -76,7 +76,7 @@ def resolve_vanity_url_name(vanity_url_name: str) -> dict:
     return resolve_vanity_url(vanity_url_name)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_player_achievements(steam_id: str, app_id: int) -> dict:
     """
     Fetch achievements for a player in a specific game
@@ -92,7 +92,7 @@ def get_player_achievements(steam_id: str, app_id: int) -> dict:
     return fetch_player_achievements(steam_id, app_id)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_user_stats(steam_id: str, app_id: int) -> dict:
     """
     Fetch stats for a player in a specific game
@@ -108,7 +108,7 @@ def get_user_stats(steam_id: str, app_id: int) -> dict:
     return fetch_user_stats_for_game(steam_id, app_id)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_owned_games(steam_id: str, include_appinfo: bool = True, include_played_free_games: bool = True) -> dict:
     """
     Fetch owned games for a Steam user
@@ -125,7 +125,7 @@ def get_owned_games(steam_id: str, include_appinfo: bool = True, include_played_
     return fetch_owned_games(steam_id, include_appinfo, include_played_free_games)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_recently_played_games(steam_id: str, count: int = 10) -> dict:
     """
     Fetch recently played games for a Steam user
@@ -141,7 +141,7 @@ def get_recently_played_games(steam_id: str, count: int = 10) -> dict:
     return fetch_recently_played_games(steam_id, count)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_game_news(app_id: int) -> dict:
     """
     Fetch news articles for a specific game
@@ -156,7 +156,7 @@ def get_game_news(app_id: int) -> dict:
     return fetch_game_news(app_id)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_game_schema(app_id: int) -> dict:
     """
     Fetch schema for a specific game
@@ -171,7 +171,7 @@ def get_game_schema(app_id: int) -> dict:
     return fetch_game_schema(app_id)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_app_details(app_id: int) -> dict:
     """
     Fetch detailed information for a specific app from the Steam Store
@@ -186,7 +186,7 @@ def get_app_details(app_id: int) -> dict:
     return fetch_app_details(app_id)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_top_market_items(count: int = 100, start: int = 0, sort_column: str = "popular", sort_dir: str = "desc") -> dict:
     """
     Fetch top items from the Steam Community Market
@@ -206,7 +206,7 @@ def get_top_market_items(count: int = 100, start: int = 0, sort_column: str = "p
     return fetch_top_market(count, start, sort_column, sort_dir)
 
 
-@mcp.tool()
+@mcp.resource()
 def search_market_items(query: str, app_id: int | None = None, count: int = 100, start: int = 0) -> dict:
     """
     Search for items in the Steam Community Market
@@ -226,7 +226,7 @@ def search_market_items(query: str, app_id: int | None = None, count: int = 100,
     return search_market(query, app_id, count, start)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_item_price_history(app_id: int, market_hash_name: str) -> dict:
     """
     Fetch price history for a specific market item
@@ -242,7 +242,7 @@ def get_item_price_history(app_id: int, market_hash_name: str) -> dict:
     return fetch_item_price_history(app_id, market_hash_name)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_item_price_overview(app_id: int, market_hash_name: str, currency: int = 1) -> dict:
     """
     Fetch current price overview for a specific market item
@@ -259,7 +259,7 @@ def get_item_price_overview(app_id: int, market_hash_name: str, currency: int = 
     return fetch_item_price_overview(app_id, market_hash_name, currency)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_popular_market_items(count: int = 10) -> dict:
     """
     Fetch popular items from the Steam Community Market
@@ -276,7 +276,7 @@ def get_popular_market_items(count: int = 10) -> dict:
     return fetch_market_popular_items(count)
 
 
-@mcp.tool()
+@mcp.resource()
 def get_recent_market_activity(app_id: int | None = None, count: int = 10) -> dict:
     """
     Fetch recent activity from the Steam Community Market
