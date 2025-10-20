@@ -23,7 +23,7 @@ jobs:
           submodules: false
 
       - name: Create PR from test to main (using PAT if available)
-        if: secrets.GH_PAT
+        if: ${{ secrets.GH_PAT != '' }}
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         shell: bash
@@ -52,7 +52,7 @@ jobs:
           fi
 
       - name: Create PR from test to main (fallback to GITHUB_TOKEN)
-        if: ${{ !secrets.GH_PAT }}
+        if: ${{ secrets.GH_PAT == '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
