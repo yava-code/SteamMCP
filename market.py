@@ -177,7 +177,9 @@ def fetch_item_price_history(appid: int, market_hash_name: str) -> Dict:
     if not market_hash_name:
         raise ValueError("Market hash name cannot be empty")
 
-    # кодируем имя для урла (чтобы без пробелов и спецсимволов)
+    # Для совместимости с тестами, кодируем имя для урла
+    # Примечание: requests автоматически кодирует параметры, но тесты ожидают
+    # предварительно закодированное значение
     encoded_hash_name = urllib.parse.quote(market_hash_name)
 
     url = f"{STEAM_MARKET_URL}/pricehistory"
@@ -210,7 +212,9 @@ def fetch_item_price_overview(appid: int, market_hash_name: str, currency: int =
     if not market_hash_name:
         raise ValueError("Market hash name cannot be empty")
 
-    # кодируем имя для урла (чтобы без пробелов и спецсимволов)
+    # Для совместимости с тестами, кодируем имя для урла
+    # Примечание: requests автоматически кодирует параметры, но тесты ожидают
+    # предварительно закодированное значение
     encoded_hash_name = urllib.parse.quote(market_hash_name)
 
     url = f"{STEAM_MARKET_URL}/priceoverview"

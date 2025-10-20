@@ -166,6 +166,3 @@ cython_debug/
 
 !/.env
 !/InternalSteamWebAPI.wiki/
-.env
-.gitignore
-.gitignore

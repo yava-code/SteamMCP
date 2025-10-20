@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     concurrency:
       group: auto-merge-test-main
-      cancel-in-progress: false
+      cancel-in-progress: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,10 +27,15 @@ jobs:
           set -e
           pr_number=$(gh pr list --base main --head test --state open --json number --jq '.[0].number' || echo '')
           if [ -z "$pr_number" ]; then
-            gh pr create --base main --head test --title "Auto: Promote test → main" --body "PR создан автоматически после пуша в ветку \`test\`. Слияние произойдёт после успешного прохождения всех обязательных проверок."
+            gh pr create --base main --head test --title "Auto: Promote test → main" --body "PR создан автоматически после пуша в ветку \`test\`. Слияние произойдёт после успешного прохождения всех обязательных проверок.
+
+This PR was created automatically after a push to the \`test\` branch. It will be merged after all required checks pass."
             pr_number=$(gh pr list --base main --head test --state open --json number --jq '.[0].number')
           fi
           # Включаем авто-мердж (слияние произойдёт после прохождения всех обязательных проверок)
-          if ! gh pr merge "$pr_number" --squash --auto; then
-            echo "Auto-merge недоступен или не включён в настройках репозитория. PR оставлен открытым."
+          if ! gh pr merge "$pr_number" --squash --auto 2> merge_error.txt; then
+            error_msg=$(cat merge_error.txt)
+            echo "::warning::Failed to enable auto-merge for PR #$pr_number. Error: $error_msg"
+            echo "Auto-merge недоступен или не включён в настройках репозитория. PR #$pr_number оставлен открытым."
+            echo "Ошибка: $error_msg"
           fi
