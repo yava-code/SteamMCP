@@ -27,10 +27,17 @@ jobs:
           set -e
           pr_number=$(gh pr list --base main --head test --state open --json number --jq '.[0].number' || echo '')
           if [ -z "$pr_number" ]; then
-            gh pr create --base main --head test --title "Auto: Promote test → main" --body "PR создан автоматически после пуша в ветку \`test\`. Слияние произойдёт после успешного прохождения всех обязательных проверок.
-
-This PR was created automatically after a push to the \`test\` branch. It will be merged after all required checks pass."
-            pr_number=$(gh pr list --base main --head test --state open --json number --jq '.[0].number')
+            echo "No open PR from test to main found. Creating via REST API..."
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" \
+              -f base=main \
+              -f head=test \
+              -f title="Auto: Promote test → main" \
+              -f body=$'PR создан автоматически после пуша в ветку `test`. Слияние произойдёт после успешного прохождения всех обязательных проверок.\n\nThis PR was created automatically after a push to the `test` branch. It will be merged after all required checks pass.'
+            pr_number=$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&head=test&base=main" --jq '.[0].number' || echo '')
+            if [ -z "$pr_number" ]; then
+              echo "::error::Failed to create PR via REST API."
+              exit 1
+            fi
           fi
           # Включаем авто-мердж (слияние произойдёт после прохождения всех обязательных проверок)
           if ! gh pr merge "$pr_number" --squash --auto 2> merge_error.txt; then
