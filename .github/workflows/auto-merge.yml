@@ -18,8 +18,41 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
 
-      - name: Create PR from test to main if missing
+      - name: Create PR from test to main (using PAT if available)
+        if: secrets.GH_PAT
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        shell: bash
+        run: |
+          set -e
+          pr_number=$(gh pr list --base main --head test --state open --json number --jq '.[0].number' || echo '')
+          if [ -z "$pr_number" ]; then
+            echo "No open PR from test to main found. Creating via REST API with GH_PAT..."
+            pr_number=$(gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" \
+              -f base=main \
+              -f head=test \
+              -f title="Auto: Promote test → main" \
+              -f body=$'PR создан автоматически после пуша в ветку `test`. Слияние произойдёт после успешного прохождения всех обязательных проверок.\n\nThis PR was created automatically after a push to the `test` branch. It will be merged after all required checks pass.' \
+              --jq '.number' || echo '')
+            if [ -z "$pr_number" ]; then
+              echo "::error::Failed to create PR via REST API using GH_PAT."
+              exit 1
+            fi
+          fi
+          # Enable auto-merge (will happen after required checks pass)
+          if ! gh pr merge "$pr_number" --squash --auto 2> merge_error.txt; then
+            error_msg=$(cat merge_error.txt)
+            echo "::warning::Failed to enable auto-merge for PR #$pr_number. Error: $error_msg"
+            echo "Auto-merge недоступен или не включён в настройках репозитория. PR #$pr_number оставлен открытым."
+            echo "Ошибка: $error_msg"
+          fi
+
+      - name: Create PR from test to main (fallback to GITHUB_TOKEN)
+        if: ${{ !secrets.GH_PAT }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -27,22 +60,23 @@ jobs:
           set -e
           pr_number=$(gh pr list --base main --head test --state open --json number --jq '.[0].number' || echo '')
           if [ -z "$pr_number" ]; then
-            echo "No open PR from test to main found. Creating via REST API..."
-            gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" \
+            echo "No open PR from test to main found. Creating via REST API with GITHUB_TOKEN..."
+            if ! pr_number=$(gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" \
               -f base=main \
               -f head=test \
               -f title="Auto: Promote test → main" \
-              -f body=$'PR создан автоматически после пуша в ветку `test`. Слияние произойдёт после успешного прохождения всех обязательных проверок.\n\nThis PR was created automatically after a push to the `test` branch. It will be merged after all required checks pass.'
-            pr_number=$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&head=test&base=main" --jq '.[0].number' || echo '')
-            if [ -z "$pr_number" ]; then
-              echo "::error::Failed to create PR via REST API."
+              -f body=$'PR создан автоматически после пуша в ветку `test`. Слияние произойдёт после успешного прохождения всех обязательных проверок.\n\nThis PR was created automatically after a push to the `test` branch. It will be merged after all required checks pass.' \
+              --jq '.number'); then
+              echo "::error::Failed to create PR via REST API using GITHUB_TOKEN (HTTP 403 likely)."
+              echo "Enable in repo settings: Actions → General → Workflow permissions → Read and write; and check 'Allow GitHub Actions to create and approve pull requests'."
+              echo "Docs: https://docs.github.com/rest/pulls/pulls#create-a-pull-request"
               exit 1
             fi
           fi
-          # Включаем авто-мердж (слияние произойдёт после прохождения всех обязательных проверок)
+          # Enable auto-merge (will happen after required checks pass)
           if ! gh pr merge "$pr_number" --squash --auto 2> merge_error.txt; then
             error_msg=$(cat merge_error.txt)
             echo "::warning::Failed to enable auto-merge for PR #$pr_number. Error: $error_msg"
-            echo "Auto-merge недоступен или не включён в настройках репозитория. PR #$pr_number оставлен открытым."
+            echo "If disabled, enable 'Allow auto-merge' in repository settings."
             echo "Ошибка: $error_msg"
           fi
