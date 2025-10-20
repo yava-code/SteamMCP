@@ -21,7 +21,7 @@ if not api_key:
     raise ValueError("STEAM_API_KEY not found in environment variables")
 
 # базовые урлы API
-STEAM_API_BASE = "http://api.steampowered.com"
+STEAM_API_BASE = "https://api.steampowered.com"
 STEAM_STORE_API_BASE = "https://store.steampowered.com/api"
 
 
