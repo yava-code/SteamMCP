@@ -81,7 +81,7 @@ def test_format_steam_profile_all_fields():
     assert "76561198006409530" in result
     assert "Busy" in result  # personastate = 2
     assert "Public" in result
-    assert "2009-02-14" in result  # timecreated converted (исправлена дата)
+    assert "2009-02-13" in result  # timecreated converted (timestamp 1234567890 = 2009-02-13)
     assert "US/CA" in result  # location
     assert "John Doe" in result  # real name
     assert "https://steamcdn-a.akamaihd.net" in result  # avatar

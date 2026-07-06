@@ -2,4 +2,6 @@ requests
 python-dotenv
 fastapi
 uvicorn
+fastmcp
 pytest
+pytest-asyncio

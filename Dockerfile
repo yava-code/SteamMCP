@@ -11,7 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # The server reads STEAM_API_KEY from environment at runtime
-# Expose default development port (if used by FastMCP/runner)
-EXPOSE 8000
+# MCP server uses stdio, so no port exposure is needed
+# EXPOSE 8000  # Commented out as MCP uses stdio, not HTTP
 
 CMD ["python", "server.py"]

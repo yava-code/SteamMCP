@@ -2,36 +2,92 @@
 
 ![img.png](misc%2Fimg.png)
 
-Сервер MCP для взаимодействия с API Steam через модель LLM.
+MCP-сервер для взаимодействия с API Steam через LLM-клиенты. Предоставляет инструменты для получения информации о профилях пользователей, играх, достижениях, новостях и данных торговой площадки Steam.
 
-## Установка
+## Быстрый старт
+
+### Установка
 
 ```bash
+# Клонировать репозиторий
+git clone https://github.com/yava-code/SteamMCP.git
+cd SteamMCP
+
+# Установить зависимости
 pip install -r requirements.txt
 ```
 
-## Переменные окружения
+### Настройка
 
-- Обязательно: `STEAM_API_KEY` — ключ доступа к Steam Web API.
-- Можно задать в `.env` или через переменные окружения системы/CI.
-
-## Запуск сервера
+Создайте файл `.env` в корне проекта и добавьте ваш Steam API ключ:
 
 ```bash
+STEAM_API_KEY=your_steam_api_key_here
+```
+
+**Важно:** Не коммитьте `.env` файл в git! Используйте `.env.example` как шаблон.
+
+### Запуск сервера
+
+```bash
+# Запуск через Python
 python server.py
-# или
+
+# Или через uv
 uv run server.py
 ```
 
-## Доступные функции
+Сервер будет доступен как MCP-сервер через stdio.
 
-### Профиль пользователя
+## Доступные инструменты (Tools)
 
-#### get_profile_info
-Получение информации о профиле Steam пользователя.
+Все функции сервера доступны как MCP tools для LLM-клиентов. Полный список инструментов можно получить через MCP-клиент.
+
+### 👤 Профиль пользователя
+
+| Инструмент | Описание |
+|-----------|----------|
+| `get_profile_info` | Получение информации о профиле Steam пользователя |
+| `get_friends` | Получение списка друзей пользователя |
+| `resolve_vanity_url_name` | Преобразование имени vanity URL в Steam ID |
+
+### 🎮 Игры и достижения
+
+| Инструмент | Описание |
+|-----------|----------|
+| `get_player_achievements` | Получение достижений игрока в конкретной игре |
+| `get_user_stats` | Получение статистики игрока в конкретной игре |
+| `get_owned_games` | Получение списка игр, принадлежащих пользователю |
+| `get_recently_played_games` | Получение списка недавно сыгранных игр |
+| `get_game_news` | Получение новостных статей об игре |
+| `get_game_schema` | Получение схемы игры (достижения, статистика) |
+| `get_app_details` | Получение подробной информации о приложении из магазина Steam |
+
+### 💰 Торговая площадка
+
+| Инструмент | Описание |
+|-----------|----------|
+| `get_top_market_items` | Получение популярных предметов с торговой площадки |
+| `search_market_items` | Поиск предметов на торговой площадке |
+| `get_item_price_history` | Получение истории цен для конкретного предмета |
+| `get_item_price_overview` | Получение обзора текущих цен для конкретного предмета |
+| `get_popular_market_items` | Получение популярных предметов с торговой площадки |
+| `get_recent_market_activity` | Получение недавней активности на торговой площадке |
+
+### Примеры использования
 
 ```python
+# Получение информации о профиле
 get_profile_info(steam_id="76561198028121353")
+
+# Получение списка игр пользователя
+get_owned_games(steam_id="76561198028121353")
+
+# Поиск предметов на рынке
+search_market_items(query="AK-47", app_id=730, count=10)
+
+# Получение информации об игре
+get_app_details(app_id=570)
 ```
 
 #### get_friends
@@ -143,27 +199,80 @@ get_popular_market_items(count=10)
 get_recent_market_activity(app_id=730, count=10)
 ```
 
-## Тестирование
+## 🧪 Тестирование
 
-- Запуск тестов локально:
+Проект включает комплексные тесты для всех модулей:
+
+- **Unit-тесты** для функций `fetcher.py` и `market.py`
+- **Интеграционные тесты** для проверки workflow между модулями
+- **MCP Smoke тесты** для проверки регистрации инструментов
+
+### Запуск тестов
 
 ```bash
+# Запуск всех тестов
+pytest -v
+
+# Запуск только unit-тестов
+pytest tests/test_fetcher.py tests/test_market.py -v
+
+# Запуск только MCP smoke тестов
+pytest tests/test_mcp_smoke.py -v
+
+# Быстрый запуск (quiet mode)
 pytest -q
 ```
 
-- Тесты используют фикстуры для подстановки `STEAM_API_KEY` и мокают `requests.get`, поэтому выполняются офлайн.
+**Примечание:** Все тесты выполняются офлайн и используют моки для `requests.get`, поэтому не требуют реального Steam API ключа.
 
-## Docker
+## 🐳 Docker
 
 Сборка и запуск контейнера:
 
 ```bash
+# Сборка образа
 docker build -t steam-mcp .
-docker run --rm -e STEAM_API_KEY=your_key -p 8000:8000 steam-mcp
+
+# Запуск контейнера
+docker run --rm -e STEAM_API_KEY=your_key steam-mcp
 ```
 
-## CI (GitHub Actions)
+**Примечание:** MCP-сервер работает через stdio, поэтому порт не требуется.
 
-- Workflow `CI` (`.github/workflows/ci.yml`) устанавливает зависимости и запускает `pytest`.
-- `STEAM_API_KEY` должен быть добавлен в GitHub Secrets репозитория.
-- Workflow `Docker Build` собирает образ с помощью `Dockerfile` (без push по умолчанию).
+## 🔧 Разработка
+
+### Структура проекта
+
+```
+SteamMCP/
+├── server.py           # MCP-сервер с инструментами
+├── fetcher.py          # Функции для работы с Steam Web API
+├── market.py           # Функции для работы с Steam Community Market
+├── utils.py            # Утилитарные функции
+├── requirements.txt    # Зависимости Python
+├── Dockerfile          # Конфигурация Docker
+├── .env.example        # Шаблон для переменных окружения
+├── tests/              # Тесты
+│   ├── test_fetcher.py
+│   ├── test_market.py
+│   ├── test_integration.py
+│   └── test_mcp_smoke.py
+└── README.md
+```
+
+### Добавление новых инструментов
+
+1. Создайте функцию в `fetcher.py` или `market.py`
+2. Импортируйте её в `server.py`
+3. Добавьте декоратор `@mcp.tool()`
+4. Добавьте тесты для новой функции
+
+## 🤖 CI/CD (GitHub Actions)
+
+- Workflow `CI` (`.github/workflows/ci.yml`) устанавливает зависимости и запускает `pytest`
+- Workflow `Docker Build` собирает Docker образ
+- `STEAM_API_KEY` должен быть добавлен в GitHub Secrets репозитория для CI
+
+## 📄 Лицензия
+
+MIT License
