@@ -129,6 +129,10 @@ class TestMCPServerInitialization:
 
     def test_server_initialization_no_api_calls(self, monkeypatch):
         """Test that server initialization doesn't make live API calls."""
+        import sys
+        for mod in ["server", "fetcher", "market"]:
+            sys.modules.pop(mod, None)
+
         monkeypatch.setenv("STEAM_API_KEY", "test_key")
         
         with patch('requests.get') as mock_get:
