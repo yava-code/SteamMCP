@@ -1,7 +1,8 @@
 from fastmcp import FastMCP
 import logging
 
-from fetcher import (
+# Import from new steam package
+from steam.adapters import (
     fetch_steam_profile,
     fetch_friend_list,
     fetch_player_achievements,
@@ -12,14 +13,19 @@ from fetcher import (
     fetch_game_schema,
     fetch_app_details,
     resolve_vanity_url,
+    fetch_user_level,
+    fetch_user_badges,
+    fetch_global_achievement_percentages,
 )
-from market import (
+from steam.adapters import (
     fetch_top_market,
     search_market,
     fetch_item_price_history,
     fetch_item_price_overview,
     fetch_market_popular_items,
     fetch_market_recent_activity,
+    fetch_item_listings,
+    fetch_item_orders_histogram,
 )
 
 logging.basicConfig(
@@ -292,6 +298,89 @@ def get_recent_market_activity(app_id: int | None = None, count: int = 10) -> di
         raise ValueError("Count must be between 1 and 100")
     logger.info(f"Fetching recent market activity, count: {count}")
     return fetch_market_recent_activity(app_id, count)
+
+
+# ============ New Tools from Stage 1 ============
+
+@mcp.tool()
+def get_user_level(steam_id: str) -> dict:
+    """
+    Fetch Steam user level
+
+    Args:
+        steam_id: Steam ID of the user
+
+    Returns:
+        Dict containing user level data
+    """
+    logger.info(f"Fetching user level for Steam ID: {steam_id}")
+    return fetch_user_level(steam_id)
+
+
+@mcp.tool()
+def get_user_badges(steam_id: str) -> dict:
+    """
+    Fetch badges owned by a Steam user
+
+    Args:
+        steam_id: Steam ID of the user
+
+    Returns:
+        Dict containing user badges data
+    """
+    logger.info(f"Fetching user badges for Steam ID: {steam_id}")
+    return fetch_user_badges(steam_id)
+
+
+@mcp.tool()
+def get_player_bans(steam_id: str) -> dict:
+    """
+    Fetch player bans information
+
+    Args:
+        steam_id: Steam ID of the user
+
+    Returns:
+        Dict containing player bans data
+    """
+    logger.info(f"Fetching player bans for Steam ID: {steam_id}")
+    # Import here to avoid circular dependency
+    from steam.adapters import fetch_player_bans
+    return fetch_player_bans(steam_id)
+
+
+@mcp.tool()
+def get_current_players(app_id: int) -> dict:
+    """
+    Fetch current player count for a game
+
+    Args:
+        app_id: Application ID of the game
+
+    Returns:
+        Dict containing current player count data
+    """
+    logger.info(f"Fetching current players for App ID: {app_id}")
+    # Import here to avoid circular dependency
+    from steam.web import SteamWebAPI
+    web = SteamWebAPI()
+    response = web.get_current_players(app_id)
+    return response.to_dict()
+
+
+@mcp.tool()
+def get_global_achievement_percentages(app_id: int) -> dict:
+    """
+    Fetch global achievement completion percentages for a game
+
+    Args:
+        app_id: Application ID of the game
+
+    Returns:
+        Dict containing global achievement percentages data
+    """
+    logger.info(f"Fetching global achievement percentages for App ID: {app_id}")
+    return fetch_global_achievement_percentages(app_id)
 
 
 if __name__ == "__main__":

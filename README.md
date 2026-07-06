@@ -39,7 +39,7 @@ uv run server.py
 
 Сервер будет доступен как MCP-сервер через stdio.
 
-## Доступные инструменты (Tools)
+## 📋 Доступные инструменты (Tools)
 
 Все функции сервера доступны как MCP tools для LLM-клиентов. Полный список инструментов можно получить через MCP-клиент.
 
@@ -50,6 +50,9 @@ uv run server.py
 | `get_profile_info` | Получение информации о профиле Steam пользователя |
 | `get_friends` | Получение списка друзей пользователя |
 | `resolve_vanity_url_name` | Преобразование имени vanity URL в Steam ID |
+| `get_user_level` | Получение уровня пользователя Steam |
+| `get_user_badges` | Получение значков пользователя |
+| `get_player_bans` | Получение информации о банях игрока |
 
 ### 🎮 Игры и достижения
 
@@ -62,6 +65,8 @@ uv run server.py
 | `get_game_news` | Получение новостных статей об игре |
 | `get_game_schema` | Получение схемы игры (достижения, статистика) |
 | `get_app_details` | Получение подробной информации о приложении из магазина Steam |
+| `get_global_achievement_percentages` | Получение глобальных процентов завершения достижений |
+| `get_current_players` | Получение текущего количества игроков в игре |
 
 ### 💰 Торговая площадка
 
@@ -246,8 +251,16 @@ docker run --rm -e STEAM_API_KEY=your_key steam-mcp
 ```
 SteamMCP/
 ├── server.py           # MCP-сервер с инструментами
-├── fetcher.py          # Функции для работы с Steam Web API
-├── market.py           # Функции для работы с Steam Community Market
+├── steam/              # Новые модули Steam API
+│   ├── __init__.py
+│   ├── client.py       # Единый HTTP-клиент с retry и rate limiting
+│   ├── schemas.py      # Dataclasses для нормализованных ответов
+│   ├── web.py          # Steam Web API функции
+│   ├── store.py        # Steam Store API функции
+│   ├── market.py       # Steam Community Market функции
+│   └── adapters.py     # Адаптеры для обратной совместимости
+├── fetcher.py          # Старые функции (депрекация)
+├── market.py           # Старые функции (депрекация)
 ├── utils.py            # Утилитарные функции
 ├── requirements.txt    # Зависимости Python
 ├── Dockerfile          # Конфигурация Docker
@@ -256,9 +269,12 @@ SteamMCP/
 │   ├── test_fetcher.py
 │   ├── test_market.py
 │   ├── test_integration.py
-│   └── test_mcp_smoke.py
+│   ├── test_mcp_smoke.py
+│   └── test_steam_client.py
 └── README.md
 ```
+
+**Примечание:** Модули `fetcher.py` и `market.py` в корне проекта сохранены для обратной совместимости, но новые функции следует использовать из пакета `steam/`.
 
 ### Добавление новых инструментов
 
