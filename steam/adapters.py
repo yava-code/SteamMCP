@@ -294,3 +294,45 @@ def compare_regional_prices(app_id: Union[str, int], regions: List[str] = None) 
         regions = ["US", "EU", "RU"]
     response = tracker.compare_regions(app_id, regions)
     return response.to_dict()
+
+
+# ============ Wishlist Adapters ============
+
+_wishlist_manager: Optional[Any] = None
+
+
+def _get_wishlist_manager() -> Any:
+    """Get or create singleton WishlistManager instance."""
+    global _wishlist_manager
+    if _wishlist_manager is None:
+        from steam.wishlist import WishlistManager
+        _wishlist_manager = WishlistManager()
+    return _wishlist_manager
+
+
+def get_wishlist(steam_id: str) -> Dict[str, Any]:
+    """Adapter for get_wishlist function."""
+    manager = _get_wishlist_manager()
+    response = manager.get_wishlist(steam_id)
+    return response.to_dict()
+
+
+def check_in_wishlist(steam_id: str, app_id: Union[str, int]) -> Dict[str, Any]:
+    """Adapter for check_in_wishlist function."""
+    manager = _get_wishlist_manager()
+    response = manager.check_in_wishlist(steam_id, app_id)
+    return response.to_dict()
+
+
+def get_wishlist_stats(steam_id: str) -> Dict[str, Any]:
+    """Adapter for get_wishlist_stats function."""
+    manager = _get_wishlist_manager()
+    response = manager.get_wishlist_stats(steam_id)
+    return response.to_dict()
+
+
+def get_wishlist_on_sale(steam_id: str) -> Dict[str, Any]:
+    """Adapter for get_wishlist_on_sale function."""
+    manager = _get_wishlist_manager()
+    response = manager.get_wishlist_on_sale(steam_id)
+    return response.to_dict()

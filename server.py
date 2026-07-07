@@ -40,6 +40,10 @@ from steam.adapters import (
     get_price_history,
     check_discounts,
     compare_regional_prices,
+    get_wishlist,
+    check_in_wishlist,
+    get_wishlist_stats,
+    get_wishlist_on_sale,
 )
 
 logging.basicConfig(
@@ -619,6 +623,95 @@ def compare_regional_prices(app_id: int, regions: list = None) -> dict:
         regions = ["US", "EU", "RU"]
     logger.info(f"Comparing prices for App ID: {app_id} across {len(regions)} regions")
     return compare_regional_prices(app_id, regions)
+
+
+# ============ Wishlist Tools (Stage 3) ============
+
+@mcp.tool()
+def get_wishlist(steam_id: str) -> dict:
+    """
+    Get a user's Steam wishlist.
+
+    Retrieves all games on a user's wishlist with pricing information,
+    priority levels, and sale status.
+
+    Args:
+        steam_id: Steam ID or vanity URL of the user
+
+    Returns:
+        Dict containing wishlist data with:
+        - total_items: Total number of items in wishlist
+        - total_price: Combined price of all items
+        - currency: Currency used for pricing
+        - items: List of wishlist items with details
+        - on_sale_count: Number of items currently on sale
+    """
+    logger.info(f"Fetching wishlist for Steam ID: {steam_id}")
+    return get_wishlist(steam_id)
+
+
+@mcp.tool()
+def check_in_wishlist(steam_id: str, app_id: int) -> dict:
+    """
+    Check if an app is in a user's wishlist.
+
+    Quick check to see if a specific game is on a user's wishlist.
+
+    Args:
+        steam_id: Steam ID or vanity URL of the user
+        app_id: Application ID to check
+
+    Returns:
+        Dict containing:
+        - in_wishlist: Boolean indicating if app is in wishlist
+        - appid: The Application ID that was checked
+    """
+    logger.info(f"Checking if App {app_id} is in {steam_id}'s wishlist")
+    return check_in_wishlist(steam_id, app_id)
+
+
+@mcp.tool()
+def get_wishlist_stats(steam_id: str) -> dict:
+    """
+    Get statistics about a user's wishlist.
+
+    Provides aggregated statistics including total items, total price,
+    number of items on sale, and priority distribution.
+
+    Args:
+        steam_id: Steam ID or vanity URL of the user
+
+    Returns:
+        Dict containing wishlist statistics:
+        - total_items: Total number of items
+        - total_price: Combined price of all items
+        - currency: Currency used for pricing
+        - on_sale_count: Number of items currently on sale
+        - priority_distribution: Count of items by priority level
+    """
+    logger.info(f"Fetching wishlist stats for Steam ID: {steam_id}")
+    return get_wishlist_stats(steam_id)
+
+
+@mcp.tool()
+def get_wishlist_on_sale(steam_id: str) -> dict:
+    """
+    Get items from a user's wishlist that are currently on sale.
+
+    Returns only the items from a user's wishlist that are currently discounted,
+    sorted by discount percentage (highest first).
+
+    Args:
+        steam_id: Steam ID or vanity URL of the user
+
+    Returns:
+        Dict containing:
+        - steamid: The user's Steam ID
+        - on_sale_items: List of wishlist items that are on sale
+        - count: Number of items on sale
+    """
+    logger.info(f"Fetching on-sale items from {steam_id}'s wishlist")
+    return get_wishlist_on_sale(steam_id)
 
 
 if __name__ == "__main__":
