@@ -16,6 +16,7 @@ from steam.adapters import (
     fetch_user_level,
     fetch_user_badges,
     fetch_global_achievement_percentages,
+    fetch_player_bans,
 )
 from steam.adapters import (
     fetch_top_market,
@@ -26,6 +27,15 @@ from steam.adapters import (
     fetch_market_recent_activity,
     fetch_item_listings,
     fetch_item_orders_histogram,
+)
+from steam.adapters import (
+    search_games,
+    get_featured_specials,
+    get_store_highlights,
+    get_app_reviews_summary,
+    get_app_tags,
+    get_release_calendar,
+    get_app_update_signal,
 )
 
 logging.basicConfig(
@@ -381,6 +391,136 @@ def get_global_achievement_percentages(app_id: int) -> dict:
     """
     logger.info(f"Fetching global achievement percentages for App ID: {app_id}")
     return fetch_global_achievement_percentages(app_id)
+
+
+# ============ Stage 2: Store & Discovery Tools ============
+
+@mcp.tool()
+def search_games(query: str, country_code: str = "US", language: str = "english", limit: int = 20) -> dict:
+    """
+    Search for games in the Steam Store
+
+    Args:
+        query: Search query
+        country_code: Country code for localized content (default: US)
+        language: Language for localized content (default: english)
+        limit: Maximum number of results to return (default: 20)
+
+    Returns:
+        Dict containing search results
+    """
+    logger.info(f"Searching games with query: {query}")
+    return search_games(query, country_code, language, limit)
+
+
+@mcp.tool()
+def get_featured_specials(country_code: str = "US", language: str = "english") -> dict:
+    """
+    Get featured specials (sales) from the Steam Store
+
+    Args:
+        country_code: Country code for localized content (default: US)
+        language: Language for localized content (default: english)
+
+    Returns:
+        Dict containing featured specials data
+    """
+    logger.info("Fetching featured specials")
+    return get_featured_specials(country_code, language)
+
+
+@mcp.tool()
+def get_store_highlights(country_code: str = "US", language: str = "english") -> dict:
+    """
+    Get store highlights (featured content) from the Steam Store
+
+    Args:
+        country_code: Country code for localized content (default: US)
+        language: Language for localized content (default: english)
+
+    Returns:
+        Dict containing store highlights data
+    """
+    logger.info("Fetching store highlights")
+    return get_store_highlights(country_code, language)
+
+
+@mcp.tool()
+def get_app_reviews_summary(app_id: int, country_code: str = "US", language: str = "english") -> dict:
+    """
+    Get reviews summary for a specific app
+
+    Args:
+        app_id: Application ID
+        country_code: Country code for localized content (default: US)
+        language: Language for localized content (default: english)
+
+    Returns:
+        Dict containing reviews summary data
+    """
+    logger.info(f"Fetching reviews summary for App ID: {app_id}")
+    return get_app_reviews_summary(app_id, country_code, language)
+
+
+@mcp.tool()
+def get_app_tags(app_id: int, country_code: str = "US", language: str = "english") -> dict:
+    """
+    Get tags for a specific app
+
+    Args:
+        app_id: Application ID
+        country_code: Country code for localized content (default: US)
+        language: Language for localized content (default: english)
+
+    Returns:
+        Dict containing app tags data
+    """
+    logger.info(f"Fetching tags for App ID: {app_id}")
+    return get_app_tags(app_id, country_code, language)
+
+
+@mcp.tool()
+def get_release_calendar(country_code: str = "US", language: str = "english", 
+                         start_date: str | None = None, end_date: str | None = None) -> dict:
+    """
+    Get release calendar from the Steam Store
+
+    Args:
+        country_code: Country code for localized content (default: US)
+        language: Language for localized content (default: english)
+        start_date: Start date in YYYY-MM-DD format (optional)
+        end_date: End date in YYYY-MM-DD format (optional)
+
+    Returns:
+        Dict containing release calendar data
+    """
+    logger.info("Fetching release calendar")
+    return get_release_calendar(country_code, language, start_date, end_date)
+
+
+@mcp.tool()
+def get_app_update_signal(app_id: int) -> dict:
+    """
+    Get update signal for a specific app (detect if recently updated)
+
+    This tool checks multiple sources to detect if an app has been recently updated:
+    - App details (change number)
+    - News items (recent announcements)
+    - Build ID changes
+
+    Args:
+        app_id: Application ID
+
+    Returns:
+        Dict containing update signal data with:
+        - has_recent_news: Boolean indicating recent news
+        - recent_news_count: Number of recent news items
+        - last_news_date: Date of last news item
+        - app_name: Name of the app
+        - last_updated: Last update timestamp
+    """
+    logger.info(f"Fetching update signal for App ID: {app_id}")
+    return get_app_update_signal(app_id)
 
 
 if __name__ == "__main__":

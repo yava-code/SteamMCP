@@ -191,3 +191,62 @@ def fetch_item_orders_histogram(item_nameid: str, currency: int = 1) -> Dict[str
     market = _get_market_api()
     response = market.get_item_orders_histogram(item_nameid, currency)
     return response.to_dict()
+
+
+# ============ Store Adapters ============
+
+def search_games(query: str, country_code: str = "US", language: str = "english", limit: int = 20) -> Dict[str, Any]:
+    """Adapter for search_games function."""
+    from steam.store import SteamStoreAPI
+    store = SteamStoreAPI()
+    response = store.search_games(query, country_code, language, limit)
+    return response.to_dict()
+
+
+def get_featured_specials(country_code: str = "US", language: str = "english") -> Dict[str, Any]:
+    """Adapter for get_featured_specials function."""
+    from steam.store import SteamStoreAPI
+    store = SteamStoreAPI()
+    response = store.get_featured_specials(country_code, language)
+    return response.to_dict()
+
+
+def get_store_highlights(country_code: str = "US", language: str = "english") -> Dict[str, Any]:
+    """Adapter for get_store_highlights function."""
+    from steam.store import SteamStoreAPI
+    store = SteamStoreAPI()
+    response = store.get_store_highlights(country_code, language)
+    return response.to_dict()
+
+
+def get_app_reviews_summary(app_id: Union[str, int], country_code: str = "US", language: str = "english") -> Dict[str, Any]:
+    """Adapter for get_app_reviews_summary function."""
+    from steam.store import SteamStoreAPI
+    store = SteamStoreAPI()
+    response = store.get_app_reviews_summary(app_id, country_code, language)
+    return response.to_dict()
+
+
+def get_app_tags(app_id: Union[str, int], country_code: str = "US", language: str = "english") -> Dict[str, Any]:
+    """Adapter for get_app_tags function."""
+    from steam.store import SteamStoreAPI
+    store = SteamStoreAPI()
+    response = store.get_app_tags(app_id, country_code, language)
+    return response.to_dict()
+
+
+def get_release_calendar(country_code: str = "US", language: str = "english", 
+                         start_date: Optional[str] = None, end_date: Optional[str] = None) -> Dict[str, Any]:
+    """Adapter for get_release_calendar function."""
+    from steam.store import SteamStoreAPI
+    store = SteamStoreAPI()
+    response = store.get_release_calendar(country_code, language, start_date, end_date)
+    return response.to_dict()
+
+
+def get_app_update_signal(app_id: Union[str, int]) -> Dict[str, Any]:
+    """Adapter for get_app_update_signal function."""
+    from steam.store import SteamStoreAPI
+    store = SteamStoreAPI()
+    response = store.get_app_update_signal(app_id)
+    return response.to_dict()

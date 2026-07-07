@@ -323,6 +323,37 @@ class AppDetails:
             screenshots=app_info.get("screenshots"),
             movies=app_info.get("movies"),
         )
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            "appid": self.appid,
+            "name": self.name,
+            "is_free": self.is_free,
+            "price_overview": self.price_overview,
+            "header_image": self.header_image,
+            "capsule_image": self.capsule_image,
+            "capsule_imagev5": self.capsule_imagev5,
+            "short_description": self.short_description,
+            "detailed_description": self.detailed_description,
+            "about_the_game": self.about_the_game,
+            "supported_languages": self.supported_languages,
+            "reviews": self.reviews,
+            "website": self.website,
+            "pc_requirements": self.pc_requirements,
+            "mac_requirements": self.mac_requirements,
+            "linux_requirements": self.linux_requirements,
+            "developers": self.developers,
+            "publishers": self.publishers,
+            "demo": self.demo,
+            "release_date": self.release_date,
+            "support_info": self.support_info,
+            "background": self.background,
+            "background_raw": self.background_raw,
+            "content_descriptors": self.content_descriptors,
+            "screenshots": self.screenshots,
+            "movies": self.movies,
+        }
 
 
 @dataclass
