@@ -161,7 +161,8 @@ class TestMCPServerInitialization:
             # Test a simple tool call
             result = server.get_profile_info("76561198006409530")
             assert result is not None
-            assert "response" in result
+            # New API returns normalized response with 'ok' field
+            assert "ok" in result or "data" in result
 
 
 class TestMCPFastMCPIntegration:
