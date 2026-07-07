@@ -336,3 +336,52 @@ def get_wishlist_on_sale(steam_id: str) -> Dict[str, Any]:
     manager = _get_wishlist_manager()
     response = manager.get_wishlist_on_sale(steam_id)
     return response.to_dict()
+
+
+# ============ Inventory Adapters ============
+
+_inventory_manager: Optional[Any] = None
+
+
+def _get_inventory_manager() -> Any:
+    """Get or create singleton InventoryManager instance."""
+    global _inventory_manager
+    if _inventory_manager is None:
+        from steam.inventory import InventoryManager
+        _inventory_manager = InventoryManager()
+    return _inventory_manager
+
+
+def get_inventory(steam_id: str, app_id: Union[str, int], context_id: Optional[str] = None) -> Dict[str, Any]:
+    """Adapter for get_inventory function."""
+    manager = _get_inventory_manager()
+    response = manager.get_inventory(steam_id, app_id, context_id)
+    return response.to_dict()
+
+
+def list_inventory_apps(steam_id: str) -> Dict[str, Any]:
+    """Adapter for list_inventory_apps function."""
+    manager = _get_inventory_manager()
+    response = manager.list_inventory_apps(steam_id)
+    return response.to_dict()
+
+
+def get_inventory_stats(steam_id: str, app_id: Union[str, int]) -> Dict[str, Any]:
+    """Adapter for get_inventory_stats function."""
+    manager = _get_inventory_manager()
+    response = manager.get_inventory_stats(steam_id, app_id)
+    return response.to_dict()
+
+
+def search_inventory(steam_id: str, app_id: Union[str, int], search_term: str) -> Dict[str, Any]:
+    """Adapter for search_inventory function."""
+    manager = _get_inventory_manager()
+    response = manager.search_inventory(steam_id, app_id, search_term)
+    return response.to_dict()
+
+
+def get_tradable_items(steam_id: str, app_id: Union[str, int]) -> Dict[str, Any]:
+    """Adapter for get_tradable_items function."""
+    manager = _get_inventory_manager()
+    response = manager.get_tradable_items(steam_id, app_id)
+    return response.to_dict()

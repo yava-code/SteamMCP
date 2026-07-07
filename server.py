@@ -44,6 +44,11 @@ from steam.adapters import (
     check_in_wishlist,
     get_wishlist_stats,
     get_wishlist_on_sale,
+    get_inventory,
+    list_inventory_apps,
+    get_inventory_stats,
+    search_inventory,
+    get_tradable_items,
 )
 
 logging.basicConfig(
@@ -712,6 +717,128 @@ def get_wishlist_on_sale(steam_id: str) -> dict:
     """
     logger.info(f"Fetching on-sale items from {steam_id}'s wishlist")
     return get_wishlist_on_sale(steam_id)
+
+
+# ============ Inventory Tools (Stage 3) ============
+
+@mcp.tool()
+def get_inventory(steam_id: str, app_id: int, context_id: str = None) -> dict:
+    """
+    Get a user's inventory for a specific app.
+
+    Retrieves all items in a user's inventory for a specific Steam app,
+    including item details, prices, and tradability status.
+
+    Args:
+        steam_id: Steam ID or vanity URL of the user
+        app_id: Application ID to get inventory for
+        context_id: Optional context ID (default: 2 for most games)
+
+    Returns:
+        Dict containing inventory data with:
+        - total_items: Total number of items
+        - total_value: Combined value of all items
+        - currency: Currency used for pricing
+        - items: List of inventory items with details
+        - tradable_count: Number of tradable items
+        - marketable_count: Number of marketable items
+    """
+    if context_id is None:
+        context_id = "2"
+    logger.info(f"Fetching inventory for {steam_id}: App {app_id}, Context {context_id}")
+    return get_inventory(steam_id, app_id, context_id)
+
+
+@mcp.tool()
+def list_inventory_apps(steam_id: str) -> dict:
+    """
+    List all apps for which a user has inventory.
+
+    Returns a list of application IDs for which the user has inventory items.
+    Note: This is currently a placeholder with common inventory apps.
+
+    Args:
+        steam_id: Steam ID or vanity URL of the user
+
+    Returns:
+        Dict containing:
+        - steamid: The user's Steam ID
+        - inventory_apps: List of app IDs with inventory
+    """
+    logger.info(f"Listing inventory apps for {steam_id}")
+    return list_inventory_apps(steam_id)
+
+
+@mcp.tool()
+def get_inventory_stats(steam_id: str, app_id: int) -> dict:
+    """
+    Get statistics about a user's inventory for a specific app.
+
+    Provides aggregated statistics including total items, total value,
+    tradable/marketable counts, and type distribution.
+
+    Args:
+        steam_id: Steam ID or vanity URL of the user
+        app_id: Application ID
+
+    Returns:
+        Dict containing inventory statistics:
+        - total_items: Total number of items
+        - total_value: Combined value of all items
+        - currency: Currency used for pricing
+        - tradable_count: Number of tradable items
+        - marketable_count: Number of marketable items
+        - type_distribution: Count of items by type
+    """
+    logger.info(f"Fetching inventory stats for {steam_id}: App {app_id}")
+    return get_inventory_stats(steam_id, app_id)
+
+
+@mcp.tool()
+def search_inventory(steam_id: str, app_id: int, search_term: str) -> dict:
+    """
+    Search a user's inventory for items matching a term.
+
+    Searches through item names and market names to find matching items.
+
+    Args:
+        steam_id: Steam ID or vanity URL of the user
+        app_id: Application ID to search in
+        search_term: Term to search for in item names
+
+    Returns:
+        Dict containing:
+        - steamid: The user's Steam ID
+        - appid: The Application ID
+        - search_term: The search term used
+        - matching_items: List of matching inventory items
+        - count: Number of matching items
+    """
+    logger.info(f"Searching inventory for {steam_id}: App {app_id}, Term '{search_term}'")
+    return search_inventory(steam_id, app_id, search_term)
+
+
+@mcp.tool()
+def get_tradable_items(steam_id: str, app_id: int) -> dict:
+    """
+    Get all tradable items from a user's inventory.
+
+    Returns only the items that can be traded from a user's inventory
+    for a specific app.
+
+    Args:
+        steam_id: Steam ID or vanity URL of the user
+        app_id: Application ID
+
+    Returns:
+        Dict containing:
+        - steamid: The user's Steam ID
+        - appid: The Application ID
+        - tradable_items: List of tradable inventory items
+        - count: Number of tradable items
+    """
+    logger.info(f"Fetching tradable items for {steam_id}: App {app_id}")
+    return get_tradable_items(steam_id, app_id)
 
 
 if __name__ == "__main__":
