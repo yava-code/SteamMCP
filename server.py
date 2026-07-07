@@ -36,6 +36,10 @@ from steam.adapters import (
     get_app_tags,
     get_release_calendar,
     get_app_update_signal,
+    track_app_price,
+    get_price_history,
+    check_discounts,
+    compare_regional_prices,
 )
 
 logging.basicConfig(
@@ -521,6 +525,100 @@ def get_app_update_signal(app_id: int) -> dict:
     """
     logger.info(f"Fetching update signal for App ID: {app_id}")
     return get_app_update_signal(app_id)
+
+
+# ============ Price Tracking Tools (Stage 3) ============
+
+@mcp.tool()
+def track_app_price(app_id: int, currency: str = "USD") -> dict:
+    """
+    Start tracking price for a specific app.
+
+    This tool begins tracking the price history for a Steam app, allowing you to
+    monitor price changes and discounts over time.
+
+    Args:
+        app_id: Application ID to track
+        currency: Currency code (USD, EUR, RUB, GBP, etc.)
+
+    Returns:
+        Dict containing price tracking data with:
+        - price_history: Price history object with current price, lowest/highest prices
+        - is_on_sale_now: Whether the app is currently on sale
+        - price_change: Recent price change information (if available)
+    """
+    logger.info(f"Starting price tracking for App ID: {app_id} in {currency}")
+    return track_app_price(app_id, currency)
+
+
+@mcp.tool()
+def get_price_history(app_id: int, currency: str = "USD", days: int = 30) -> dict:
+    """
+    Get price history for a specific app.
+
+    Retrieves historical price data for a tracked app, allowing you to see
+    how the price has changed over time.
+
+    Args:
+        app_id: Application ID
+        currency: Currency code (USD, EUR, RUB, GBP, etc.)
+        days: Number of days to look back (default: 30)
+
+    Returns:
+        Dict containing price history with:
+        - price_points: List of historical price points
+        - current_price: Current price information
+        - lowest_price: Lowest recorded price
+        - highest_price: Highest recorded price
+        - price_change: Most recent price change
+    """
+    logger.info(f"Fetching price history for App ID: {app_id} (last {days} days)")
+    return get_price_history(app_id, currency, days)
+
+
+@mcp.tool()
+def check_discounts(app_ids: list, currency: str = "USD") -> dict:
+    """
+    Check which apps are currently on sale.
+
+    This tool checks multiple apps at once and returns which ones are currently
+    discounted, making it easy to find deals.
+
+    Args:
+        app_ids: List of Application IDs to check
+        currency: Currency code (USD, EUR, RUB, GBP, etc.)
+
+    Returns:
+        Dict containing:
+        - on_sale: List of apps currently on sale with discount details
+        - not_on_sale: List of apps not currently on sale
+        - errors: List of any errors encountered
+    """
+    logger.info(f"Checking discounts for {len(app_ids)} apps in {currency}")
+    return check_discounts(app_ids, currency)
+
+
+@mcp.tool()
+def compare_regional_prices(app_id: int, regions: list = None) -> dict:
+    """
+    Compare prices across different regions.
+
+    This tool helps you find the best price for an app by comparing
+    prices across different Steam regions.
+
+    Args:
+        app_id: Application ID to compare
+        regions: List of country codes to compare (default: US, EU, RU)
+
+    Returns:
+        Dict containing:
+        - regional_prices: Dictionary of prices by region
+        - best_deal: Region with the lowest price
+    """
+    if regions is None:
+        regions = ["US", "EU", "RU"]
+    logger.info(f"Comparing prices for App ID: {app_id} across {len(regions)} regions")
+    return compare_regional_prices(app_id, regions)
 
 
 if __name__ == "__main__":

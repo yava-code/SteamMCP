@@ -6,7 +6,7 @@ but maintain the same interface as the old modules.
 """
 
 import logging
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from steam.client import SteamClient, APIResponse
 from steam.web import SteamWebAPI
@@ -249,4 +249,48 @@ def get_app_update_signal(app_id: Union[str, int]) -> Dict[str, Any]:
     from steam.store import SteamStoreAPI
     store = SteamStoreAPI()
     response = store.get_app_update_signal(app_id)
+    return response.to_dict()
+
+
+# ============ Price Tracker Adapters ============
+
+_price_tracker: Optional[Any] = None
+
+
+def _get_price_tracker() -> Any:
+    """Get or create singleton PriceTracker instance."""
+    global _price_tracker
+    if _price_tracker is None:
+        from steam.price_tracker import PriceTracker
+        _price_tracker = PriceTracker()
+    return _price_tracker
+
+
+def track_app_price(app_id: Union[str, int], currency: str = "USD") -> Dict[str, Any]:
+    """Adapter for track_app_price function."""
+    tracker = _get_price_tracker()
+    response = tracker.track_app(app_id, currency)
+    return response.to_dict()
+
+
+def get_price_history(app_id: Union[str, int], currency: str = "USD", days: int = 30) -> Dict[str, Any]:
+    """Adapter for get_price_history function."""
+    tracker = _get_price_tracker()
+    response = tracker.get_price_history(app_id, currency, days)
+    return response.to_dict()
+
+
+def check_discounts(app_ids: List[Union[str, int]], currency: str = "USD") -> Dict[str, Any]:
+    """Adapter for check_discounts function."""
+    tracker = _get_price_tracker()
+    response = tracker.check_discounts(app_ids, currency)
+    return response.to_dict()
+
+
+def compare_regional_prices(app_id: Union[str, int], regions: List[str] = None) -> Dict[str, Any]:
+    """Adapter for compare_regional_prices function."""
+    tracker = _get_price_tracker()
+    if regions is None:
+        regions = ["US", "EU", "RU"]
+    response = tracker.compare_regions(app_id, regions)
     return response.to_dict()
