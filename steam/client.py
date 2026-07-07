@@ -74,6 +74,7 @@ class APIResponse:
     fetched_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     rate_limit_hint: Optional[Dict[str, Any]] = None
     error: Optional[Dict[str, Any]] = None
+    summary: Optional[str] = None
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
@@ -88,6 +89,8 @@ class APIResponse:
             result["rate_limit_hint"] = self.rate_limit_hint
         if self.error:
             result["error"] = self.error
+        if self.summary:
+            result["summary"] = self.summary
         return result
 
 

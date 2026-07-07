@@ -24,6 +24,127 @@ from steam.web import SteamWebAPI
 logger = logging.getLogger(__name__)
 
 
+def _generate_summary(response: APIResponse, function_name: str, **kwargs) -> str:
+    """Generate a human-readable summary for API responses."""
+    if not response.ok:
+        error_msg = response.error.get("message", "Unknown error") if response.error else "Request failed"
+        return f"{function_name}: Error - {error_msg}"
+    
+    summaries = {
+        "search_games": lambda: _summarize_search(response),
+        "get_featured_specials": lambda: _summarize_featured_specials(response),
+        "get_store_highlights": lambda: _summarize_store_highlights(response),
+        "get_app_reviews_summary": lambda: _summarize_app_reviews(response, kwargs.get("app_id")),
+        "get_app_tags": lambda: _summarize_app_tags(response, kwargs.get("app_id")),
+        "get_release_calendar": lambda: _summarize_release_calendar(response),
+        "get_app_update_signal": lambda: _summarize_app_update_signal(response),
+        "get_app_details": lambda: _summarize_app_details(response),
+    }
+    
+    summarizer = summaries.get(function_name)
+    if summarizer:
+        return summarizer()
+    
+    # Default summary
+    data_keys = list(response.data.keys())[:3]  # First 3 keys
+    return f"{function_name}: {', '.join(str(k) for k in data_keys)}"
+
+
+def _summarize_search(response: APIResponse) -> str:
+    """Summarize search results."""
+    data = response.data
+    if "results" in data:
+        count = len(data["results"])
+        return f"Search: Found {count} result(s)"
+    return "Search: No results"
+
+
+def _summarize_featured_specials(response: APIResponse) -> str:
+    """Summarize featured specials."""
+    data = response.data
+    if "specials" in data and "items" in data["specials"]:
+        count = len(data["specials"]["items"])
+        return f"Featured Specials: {count} item(s) on sale"
+    return "Featured Specials: No data"
+
+
+def _summarize_store_highlights(response: APIResponse) -> str:
+    """Summarize store highlights."""
+    data = response.data
+    if "highlights" in data:
+        count = len(data["highlights"])
+        return f"Store Highlights: {count} featured item(s)"
+    return "Store Highlights: No data"
+
+
+def _summarize_app_reviews(response: APIResponse, app_id: Optional[int] = None) -> str:
+    """Summarize app reviews."""
+    data = response.data
+    if "query_summary" in data:
+        summary = data["query_summary"]
+        total = summary.get("total_reviews", 0)
+        positive = summary.get("positive", 0)
+        score = summary.get("score", 0)
+        app_name = f"App {app_id}" if app_id else "App"
+        return f"{app_name} Reviews: {total} total, {positive} positive, Score: {score}%"
+    return f"App {app_id} Reviews: No data" if app_id else "App Reviews: No data"
+
+
+def _summarize_app_tags(response: APIResponse, app_id: Optional[int] = None) -> str:
+    """Summarize app tags."""
+    data = response.data
+    app_name = f"App {app_id}" if app_id else "App"
+    
+    # Tags might be in different places
+    tags = []
+    if str(app_id) in data and "data" in data[str(app_id)] and "tags" in data[str(app_id)]["data"]:
+        tags = data[str(app_id)]["data"]["tags"]
+    elif "tags" in data:
+        tags = data["tags"]
+    
+    if tags:
+        tag_names = [t.get("name", "") for t in tags if isinstance(t, dict)]
+        return f"{app_name} Tags: {', '.join(tag_names[:5])}" + ("..." if len(tag_names) > 5 else "")
+    return f"{app_name} Tags: No tags"
+
+
+def _summarize_release_calendar(response: APIResponse) -> str:
+    """Summarize release calendar."""
+    data = response.data
+    if "upcoming" in data:
+        count = len(data["upcoming"])
+        return f"Release Calendar: {count} upcoming release(s)"
+    return "Release Calendar: No data"
+
+
+def _summarize_app_update_signal(response: APIResponse) -> str:
+    """Summarize app update signal."""
+    data = response.data
+    if "update_signal" in data:
+        signal = data["update_signal"]
+        app_name = signal.get("app_name", "App")
+        has_recent = signal.get("has_recent_news", False)
+        news_count = signal.get("recent_news_count", 0)
+        return f"{app_name}: {'Recent update detected' if has_recent else 'No recent updates'} ({news_count} news item(s))"
+    return "Update Signal: No data"
+
+
+def _summarize_app_details(response: APIResponse) -> str:
+    """Summarize app details."""
+    data = response.data
+    if "app" in data:
+        app = data["app"]
+        name = app.get("name", "Unknown")
+        is_free = app.get("is_free", False)
+        price = app.get("price_overview", {})
+        if price and not is_free:
+            final_price = price.get("final", 0) / 100 if price.get("final") else 0
+            currency = price.get("currency", "USD")
+            return f"{name}: {'Free' if is_free else f'{currency} ${final_price:.2f}'}"
+        return f"{name}: {'Free' if is_free else 'Paid'}"
+    return "App Details: No data"
+
+
 class SteamStoreAPI:
     """
     Client for Steam Store API operations.
@@ -79,6 +200,10 @@ class SteamStoreAPI:
                 response.data = {"app": app_details.to_dict()}
             except Exception as e:
                 logger.warning(f"Failed to parse app details: {e}")
+        
+        # Add summary
+        if response.ok:
+            response.summary = _generate_summary(response, "get_app_details", app_id=app_id)
         
         # Cache the result
         if response.ok:
@@ -158,6 +283,11 @@ class SteamStoreAPI:
         params = {"cc": country_code, "l": language}
         
         response = self.client.get(url, params=params)
+        
+        # Add summary
+        if response.ok:
+            response.summary = _generate_summary(response, "get_store_highlights")
+        
         return response
     
     def search_games(self, query: str, country_code: str = "US", 
@@ -206,6 +336,10 @@ class SteamStoreAPI:
         
         response = self.client.get(url, params=params)
         
+        # Add summary
+        if response.ok:
+            response.summary = _generate_summary(response, "search_games", query=query)
+        
         # Cache the result
         if response.ok:
             discovery_cache.set(cache_key, response, ttl=300)  # 5 minutes
@@ -251,6 +385,10 @@ class SteamStoreAPI:
             }
             response = self.client.get(url, params=params)
         
+        # Add summary
+        if response.ok:
+            response.summary = _generate_summary(response, "get_featured_specials")
+        
         # Cache the result
         if response.ok:
             discovery_cache.set(cache_key, response, ttl=600)  # 10 minutes
@@ -290,6 +428,10 @@ class SteamStoreAPI:
         
         response = self.client.get(url, params=params)
         
+        # Add summary
+        if response.ok:
+            response.summary = _generate_summary(response, "get_app_reviews_summary", app_id=app_id)
+        
         # Cache the result
         if response.ok:
             app_cache.set(cache_key, response, ttl=1800)  # 30 minutes
@@ -328,6 +470,10 @@ class SteamStoreAPI:
         }
         
         response = self.client.get(url, params=params)
+        
+        # Add summary
+        if response.ok:
+            response.summary = _generate_summary(response, "get_app_tags", app_id=app_id)
         
         # Cache the result
         if response.ok:
@@ -369,6 +515,10 @@ class SteamStoreAPI:
             params["end_date"] = end_date
         
         response = self.client.get(url, params=params)
+        
+        # Add summary
+        if response.ok:
+            response.summary = _generate_summary(response, "get_release_calendar")
         
         # Cache the result
         if response.ok:
@@ -436,6 +586,9 @@ class SteamStoreAPI:
             source="steam_store_api",
             data={"update_signal": update_signal}
         )
+        
+        # Add summary
+        response.summary = _generate_summary(response, "get_app_update_signal")
         
         # Cache the result
         app_cache.set(cache_key, response, ttl=300)  # 5 minutes

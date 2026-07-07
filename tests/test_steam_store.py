@@ -340,6 +340,130 @@ class TestParameterValidation:
             assert call_args[1]['params']['l'] == "russian"
 
 
+class TestResponseSummaries:
+    """Test response summaries in Store API."""
+    
+    def test_app_details_summary(self, monkeypatch):
+        """Test that app details response has summary."""
+        monkeypatch.setenv("STEAM_API_KEY", "test_key")
+        store = SteamStoreAPI()
+        
+        with patch.object(store.client, 'get') as mock_get, \
+             patch('steam.store.app_cache') as mock_cache:
+            
+            api_response = APIResponse(
+                ok=True,
+                source="steam_store_api",
+                data={
+                    "730": {
+                        "success": True,
+                        "data": {
+                            "name": "Counter-Strike 2",
+                            "is_free": False,
+                            "price_overview": {
+                                "final": 0,
+                                "currency": "USD"
+                            }
+                        }
+                    }
+                }
+            )
+            mock_get.return_value = api_response
+            mock_cache.get.return_value = None
+            
+            response = store.get_app_details(730)
+            assert response.ok is True
+            assert hasattr(response, 'summary')
+            assert response.summary is not None
+            assert "Counter-Strike 2" in response.summary
+    
+    def test_search_games_summary(self, monkeypatch):
+        """Test that search games response has summary."""
+        monkeypatch.setenv("STEAM_API_KEY", "test_key")
+        store = SteamStoreAPI()
+        
+        with patch.object(store.client, 'get') as mock_get, \
+             patch('steam.store.discovery_cache') as mock_cache:
+            
+            api_response = APIResponse(
+                ok=True,
+                source="steam_store_api",
+                data={
+                    "results": [
+                        {"appid": 730, "name": "CS2"},
+                        {"appid": 570, "name": "Dota 2"}
+                    ]
+                }
+            )
+            mock_get.return_value = api_response
+            mock_cache.get.return_value = None
+            
+            response = store.search_games("counter")
+            assert response.ok is True
+            assert hasattr(response, 'summary')
+            assert response.summary is not None
+            assert "2 result(s)" in response.summary
+    
+    def test_featured_specials_summary(self, monkeypatch):
+        """Test that featured specials response has summary."""
+        monkeypatch.setenv("STEAM_API_KEY", "test_key")
+        store = SteamStoreAPI()
+        
+        with patch.object(store.client, 'get') as mock_get, \
+             patch('steam.store.discovery_cache') as mock_cache:
+            
+            api_response = APIResponse(
+                ok=True,
+                source="steam_store_api",
+                data={
+                    "specials": {
+                        "items": [
+                            {"appid": 730, "discount_percent": 50},
+                            {"appid": 570, "discount_percent": 30}
+                        ]
+                    }
+                }
+            )
+            mock_get.return_value = api_response
+            mock_cache.get.return_value = None
+            
+            response = store.get_featured_specials()
+            assert response.ok is True
+            assert hasattr(response, 'summary')
+            assert response.summary is not None
+            assert "2 item(s) on sale" in response.summary
+    
+    def test_app_reviews_summary(self, monkeypatch):
+        """Test that app reviews response has summary."""
+        monkeypatch.setenv("STEAM_API_KEY", "test_key")
+        store = SteamStoreAPI()
+        
+        with patch.object(store.client, 'get') as mock_get, \
+             patch('steam.store.app_cache') as mock_cache:
+            
+            api_response = APIResponse(
+                ok=True,
+                source="steam_store_api",
+                data={
+                    "query_summary": {
+                        "total_reviews": 1000,
+                        "positive": 800,
+                        "negative": 200,
+                        "score": 80
+                    }
+                }
+            )
+            mock_get.return_value = api_response
+            mock_cache.get.return_value = None
+            
+            response = store.get_app_reviews_summary(730)
+            assert response.ok is True
+            assert hasattr(response, 'summary')
+            assert response.summary is not None
+            assert "1000 total" in response.summary
+            assert "80%" in response.summary
+
+
 class TestResponseNormalization:
     """Test response normalization in Store API."""
     
